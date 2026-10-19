@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Matthew &amp; Katrina - My Computer</title>
+<meta name="description" content="Matthew Wilson &amp; Katrina Zagami are getting married Friday, February 12, 2027 at Le Château, South Salem, New York." />
+<style>
+  :root{
+    --luna-top:#3a93ff;
+    --luna-mid:#1b5fd6;
+    --luna-bot:#0f45b0;
+    --luna-border:#0a2e8c;
+    --grey-bevel:#ece9d8;
+    --grey-bevel-dark:#919b9c;
+    --ink:#111;
+    --sky-top:#3a8ee0;
+    --sky-bot:#bfe4ff;
+    --grass:#4f9a3d;
+    --grass-dark:#3c7a2e;
+  }
+  *{ box-sizing:border-box; }
+  html,body{
+    margin:0; padding:0; height:100%;
+    font-family:Tahoma, Verdana, Geneva, sans-serif;
+    overflow:hidden;
+  }
+  body{ position:relative; }
+
+  /* ---------------- DESKTOP BACKGROUND ---------------- */
+  .desktop{
+    position:fixed; inset:0;
+    background:linear-gradient(to bottom, var(--sky-top) 0%, var(--sky-bot) 62%, var(--grass) 62%, var(--grass-dark) 100%);
+    overflow:hidden;
+  }
+  .cloud{
+    position:absolute;
+    background:#fff;
+    border-radius:50%;
+    opacity:0.85;
+    filter:blur(0.5px);
+  }
+  .hill{
+    position:absolute;
+    bottom:38%;
+    width:60%;
+    height:22%;
+    background:var(--grass);
+    border-radius:50% 50% 0 0 / 100% 100% 0 0;
+    opacity:0.9;
+  }
+
+  /* ---------------- ICONS ---------------- */
+  .icons{
+    position:absolute;
+    top:18px; left:14px;
+    display:flex;
+    flex-direction:column;
+    gap:22px;
+    z-index:5;
+  }
+  .icon{
+    width:78px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    cursor:pointer;
+    padding:4px;
+    border:1px dotted transparent;
+    user-select:none;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .icon.selected{
+    background:rgba(49,105,198,0.38);
+    border:1px dotted #fff;
+  }
+  .icon svg{ width:34px; height:34px; filter:drop-shadow(1px 1px 1px rgba(0,0,0,0.5)); }
+  .icon-label{
+    margin-top:4px;
+    font-size:11.5px;
+    color:#fff;
+    text-align:center;
+    text-shadow:1px 1px 2px rgba(0,0,0,0.85);
+    line-height:1.25;
+  }
+
+  /* ---------------- WINDOWS ---------------- */
+  .xp-window{
+    position:absolute;
+    display:none;
+    background:var(--grey-bevel);
+    border:3px solid var(--luna-border);
+    border-radius:8px 8px 3px 3px;
+    box-shadow:4px 4px 14px rgba(0,0,0,0.45);
+    min-width:260px;
+    overflow:hidden;
+  }
+  .xp-window.open{ display:flex; flex-direction:column; }
+  .xp-window.maximized{
+    left:3vw !important; top:3vh !important;
+    width:94vw !important; height:90vh !important;
+  }
+  .title-bar{
+    background:linear-gradient(180deg, var(--luna-top) 0%, var(--luna-mid) 45%, var(--luna-bot) 100%);
+    color:#fff;
+    display:flex;
+    align-items:center;
+    gap:6px;
+    padding:3px 4px 3px 7px;
+    font-weight:bold;
+    font-size:12.5px;
+    cursor:grab;
+    flex:0 0 auto;
+  }
+  .title-bar svg{ width:15px; height:15px; flex:0 0 auto; }
+  .title-bar-text{
+    flex:1;
+    overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+    text-shadow:1px 1px 1px rgba(0,0,0,0.4);
+  }
+  .title-bar-controls{ display:flex; gap:2px; }
+  .title-bar-controls button{
+    width:20px; height:19px;
+    border:1px solid rgba(0,0,0,0.4);
+    border-radius:3px;
+    background:linear-gradient(180deg,#f4f4f4,#c9c9c9);
+    color:#111;
+    font-size:11px; font-weight:bold;
+    line-height:1;
+    cursor:pointer;
+    padding:0;
+  }
+  .title-bar-controls .btn-close{
+    background:linear-gradient(180deg,#f08a7e,#d6362a);
+    color:#fff;
+    border-color:#7a0f08;
+  }
+  .window-body{
+    background:#fff;
+    padding:14px 16px;
+    overflow-y:auto;
+    flex:1 1 auto;
+    font-size:13.5px;
+    color:var(--ink);
+    line-height:1.55;
+  }
+  .menu-fake{
+    background:var(--grey-bevel);
+    border-bottom:1px solid #aaa;
+    padding:2px 8px;
+    font-size:12px;
+    color:#333;
+    display:flex;
+    gap:14px;
+    flex:0 0 auto;
+  }
+  .status-bar{
+    background:var(--grey-bevel);
+    border-top:1px solid #fff;
+    box-shadow:inset 0 1px 0 #fff;
+    font-size:11px;
+    color:#333;
+    padding:2px 8px;
+    flex:0 0 auto;
+  }
+
+  h2.doc-title{ margin:0 0 6px; font-size:16px; }
+  .field{ margin:0 0 10px; }
+  .field strong{ display:block; }
+  .btn-link{
+    display:inline-block;
+    margin-top:6px;
+    padding:4px 12px;
+    background:var(--grey-bevel);
+    border:2px outset #fff;
+    border-radius:2px;
+    font-size:12.5px;
+    color:#111;
+    text-decoration:none;
+    cursor:pointer;
+  }
+  .btn-link:active{ border-style:inset; }
+
+  table.sheet{ border-collapse:collapse; width:100%; font-size:13px; }
+  table.sheet th, table.sheet td{
+    border:1px solid #7aa87a;
+    padding:6px 8px;
+    text-align:left;
+  }
+  table.sheet th{ background:#d7f0d7; }
+  table.sheet td:first-child{ background:#f2fbf2; font-weight:bold; width:40%; }
+
+  /* ---------------- IE WINDOW ---------------- */
+  .ie-toolbar{
+    display:flex; align-items:center; gap:4px;
+    background:var(--grey-bevel);
+    border-bottom:1px solid #999;
+    padding:4px 6px;
+    flex:0 0 auto;
+  }
+  .ie-toolbar button{
+    width:40px; height:32px;
+    border:1px solid transparent;
+    background:transparent;
+    font-size:9px;
+    color:#333;
+    cursor:pointer;
+    border-radius:3px;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:2px;
+  }
+  .ie-toolbar button svg{ width:16px; height:16px; }
+  .ie-toolbar button:hover{ background:#dcebfb; border-color:#a7c7e7; }
+  .address-row{
+    display:flex; align-items:center; gap:6px;
+    background:var(--grey-bevel);
+    padding:4px 6px 7px;
+    flex:0 0 auto;
+  }
+  .address-row label{ font-size:11.5px; color:#333; }
+  .address-row input{
+    flex:1;
+    padding:3px 6px;
+    border:1px solid #7a7a7a;
+    font-size:12px;
+    background:#fff;
+  }
+  .ie-page{
+    background:#fff;
+    padding:22px;
+    text-align:center;
+  }
+  .ie-page h2{ margin-top:0; color:#0f45b0; }
+  .rsvp-go{
+    margin-top:16px;
+    display:inline-block;
+    padding:10px 26px;
+    background:linear-gradient(180deg,#5cb85c,#3c9c3c);
+    border:2px outset #bfe8bf;
+    border-radius:3px;
+    color:#fff;
+    font-weight:bold;
+    font-size:14px;
+    text-decoration:none;
+    cursor:pointer;
+  }
+  .rsvp-go:active{ border-style:inset; }
+
+  /* ---------------- TASKBAR ---------------- */
+  .taskbar{
+    position:fixed; left:0; right:0; bottom:0;
+    height:34px;
+    background:linear-gradient(180deg, var(--luna-top), var(--luna-bot));
+    border-top:1px solid #8ecbff;
+    display:flex;
+    align-items:center;
+    padding:0 4px;
+    gap:6px;
+    z-index:999;
+  }
+  .start-btn{
+    height:26px;
+    padding:0 16px 0 12px;
+    background:linear-gradient(180deg,#5cd65c,#1f8f1f);
+    border:1px solid #0d5c0d;
+    border-radius:4px 10px 10px 4px;
+    color:#fff;
+    font-weight:bold;
+    font-style:italic;
+    font-size:14px;
+    cursor:pointer;
+  }
+  .taskbar-buttons{
+    flex:1;
+    display:flex;
+    gap:4px;
+    overflow-x:auto;
+  }
+  .taskbar-btn{
+    height:26px;
+    padding:0 10px;
+    background:linear-gradient(180deg,#3f7fe0,#1c4fb0);
+    border:1px solid #0a2e8c;
+    border-radius:3px;
+    color:#fff;
+    font-size:11.5px;
+    cursor:pointer;
+    white-space:nowrap;
+    max-width:150px;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .taskbar-btn.active{ background:linear-gradient(180deg,#2a63c7,#123b85); }
+  .systray{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    background:#154fc0;
+    border-radius:3px 0 0 3px;
+    padding:0 10px;
+    height:26px;
+    color:#fff;
+    font-size:11px;
+    white-space:nowrap;
+  }
+
+  /* ---------------- START MENU ---------------- */
+  .start-menu{
+    position:fixed;
+    left:4px; bottom:36px;
+    width:230px;
+    background:#fff;
+    border:2px solid var(--luna-border);
+    border-radius:6px 6px 0 0;
+    box-shadow:3px 3px 12px rgba(0,0,0,0.4);
+    display:none;
+    z-index:1000;
+    overflow:hidden;
+  }
+  .start-menu.open{ display:block; }
+  .start-menu-header{
+    background:linear-gradient(180deg,var(--luna-top),var(--luna-bot));
+    color:#fff;
+    padding:10px 12px;
+    font-weight:bold;
+    font-size:14px;
+  }
+  .start-menu-item{
+    display:flex; align-items:center; gap:10px;
+    padding:8px 12px;
+    font-size:13px;
+    color:#111;
+    cursor:pointer;
+  }
+  .start-menu-item:hover{ background:#2a63c7; color:#fff; }
+  .start-menu-item svg{ width:20px; height:20px; flex:0 0 auto; }
+
+  .napster-status{ font-size:11px; color:#555; margin-bottom:8px; }
+  .transfer-row{ font-size:12.5px; margin-bottom:8px; line-height:1.4; }
+  .progress-outer{ border:1px inset #888; background:#fff; height:16px; border-radius:2px; overflow:hidden; }
+  .progress-inner{
+    height:100%; width:0%;
+    background:repeating-linear-gradient(45deg, #2a63c7 0 8px, #4f86e0 8px 16px);
+    transition:width 0.3s linear;
+  }
+  .transfer-stats{ font-size:11px; color:#555; margin-top:4px; }
+  .now-playing{ border-top:1px solid #ccc; padding-top:10px; }
+
+  .buddy-row{ display:flex; align-items:center; gap:6px; font-size:13px; margin-bottom:6px; flex:0 0 auto; }
+  .online-dot{ width:9px; height:9px; border-radius:50%; background:#3fbf3f; display:inline-block; box-shadow:0 0 3px #3fbf3f; }
+  .away-box{
+    background:#fffceb; border:1px solid #e3d48a; border-radius:4px;
+    font-size:11.5px; font-style:italic; color:#555; padding:6px 8px; margin-bottom:8px; flex:0 0 auto;
+  }
+  .chat-log{
+    flex:1 1 auto; overflow-y:auto; display:flex; flex-direction:column; gap:6px; padding-bottom:8px;
+  }
+  .chat-msg{ max-width:80%; padding:5px 9px; border-radius:10px; font-size:12.5px; line-height:1.4; }
+  .chat-msg.them{ background:#e8f0fe; align-self:flex-start; border:1px solid #c7d8f7; }
+  .chat-msg.me{ background:#d8f5d8; align-self:flex-end; border:1px solid #b6e3b6; }
+  .chat-input-row{
+    display:flex; gap:6px; padding:8px 10px; border-top:1px solid #ccc; background:var(--grey-bevel); flex:0 0 auto;
+  }
+  .chat-input-row input{ flex:1; padding:5px 7px; border:1px solid #999; font-size:12.5px; }
+  .chat-input-row button{
+    padding:5px 12px; border:2px outset #fff; background:var(--grey-bevel); font-size:12px; cursor:pointer;
+  }
+  .chat-input-row button:active{ border-style:inset; }
+
+  @keyframes popIn{
+    0%{ transform:scale(0.85); opacity:0; }
+    60%{ transform:scale(1.04); opacity:1; }
+    100%{ transform:scale(1); opacity:1; }
+  }
+  .xp-window.pop-in{ animation:popIn 0.35s ease-out; }
+
+  @media (max-width:760px){
+    .xp-window{
+      left:3vw !important; top:5vh !important;
+      width:94vw !important; height:auto !important;
+      max-height:86vh !important;
+    }
+    .window-body{ max-height:62vh; }
+    .icons{ gap:16px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="desktop" id="desktop">
+  <div class="cloud" style="width:90px;height:34px;top:40px;left:20%;"></div>
+  <div class="cloud" style="width:60px;height:24px;top:70px;left:55%;"></div>
+  <div class="cloud" style="width:110px;height:40px;top:30px;left:75%;"></div>
+  <div class="hill" style="left:-10%;"></div>
+  <div class="hill" style="left:45%; width:70%; opacity:0.8;"></div>
+
+  <div class="icons">
+    <div class="icon" data-win="info" tabindex="0" role="button" aria-label="Open Save the Date">
+      <svg viewBox="0 0 32 32"><rect x="6" y="3" width="20" height="26" rx="1" fill="#fff" stroke="#6b7280" stroke-width="1.5"/><line x1="10" y1="9" x2="22" y2="9" stroke="#2f6fd6" stroke-width="1.5"/><line x1="10" y1="14" x2="22" y2="14" stroke="#2f6fd6" stroke-width="1.5"/><line x1="10" y1="19" x2="18" y2="19" stroke="#2f6fd6" stroke-width="1.5"/></svg>
+      <div class="icon-label">Save_The_Date.txt</div>
+    </div>
+
+    <div class="icon" data-win="venues" tabindex="0" role="button" aria-label="Open Ceremony and Reception">
+      <svg viewBox="0 0 32 32"><path d="M8 3h11l5 5v21H8z" fill="#fef3c7" stroke="#b45309" stroke-width="1.5"/><path d="M19 3v5h5" fill="none" stroke="#b45309" stroke-width="1.5"/></svg>
+      <div class="icon-label">Ceremony_and_Reception.exe</div>
+    </div>
+
+    <div class="icon" data-win="schedule" tabindex="0" role="button" aria-label="Open Schedule">
+      <svg viewBox="0 0 32 32"><rect x="4" y="5" width="24" height="22" fill="#e9f7ef" stroke="#1e7a42" stroke-width="1.5"/><line x1="4" y1="12" x2="28" y2="12" stroke="#1e7a42"/><line x1="4" y1="19" x2="28" y2="19" stroke="#1e7a42"/><line x1="12" y1="5" x2="12" y2="27" stroke="#1e7a42"/><line x1="20" y1="5" x2="20" y2="27" stroke="#1e7a42"/></svg>
+      <div class="icon-label">Schedule.xls</div>
+    </div>
+
+    <div class="icon" data-win="travel" tabindex="0" role="button" aria-label="Open Travel and Hotel">
+      <svg viewBox="0 0 32 32"><path d="M8 3h11l5 5v21H8z" fill="#dbeafe" stroke="#1d4ed8" stroke-width="1.5"/><path d="M19 3v5h5" fill="none" stroke="#1d4ed8" stroke-width="1.5"/></svg>
+      <div class="icon-label">Travel_and_Hotel.exe</div>
+    </div>
+
+    <div class="icon" data-win="rsvp" tabindex="0" role="button" aria-label="Open RSVP">
+      <svg viewBox="0 0 32 32"><circle cx="16" cy="16" r="12" fill="#bfe3ff" stroke="#1d4ed8" stroke-width="1.5"/><ellipse cx="16" cy="16" rx="5" ry="12" fill="none" stroke="#1d4ed8" stroke-width="1.2"/><line x1="4" y1="16" x2="28" y2="16" stroke="#1d4ed8" stroke-width="1.2"/></svg>
+      <div class="icon-label">RSVP (Internet)</div>
+    </div>
+
+    <div class="icon" data-win="chat" tabindex="0" role="button" aria-label="Open Instant Message">
+      <svg viewBox="0 0 32 32"><path d="M4 8a3 3 0 013-3h14a3 3 0 013 3v8a3 3 0 01-3 3H10l-5 4v-4H7a3 3 0 01-3-3z" fill="#fff59d" stroke="#b58b00" stroke-width="1.5"/></svg>
+      <div class="icon-label">Instant Message</div>
+    </div>
+
+    <div class="icon" data-win="mp3" tabindex="0" role="button" aria-label="Open iris.mp3">
+      <svg viewBox="0 0 32 32"><path d="M12 24a3 3 0 100-6 3 3 0 000 6zM22 20a3 3 0 100-6 3 3 0 000 6z" fill="#333"/><path d="M12 21V7l10-2v12" fill="none" stroke="#333" stroke-width="2"/></svg>
+      <div class="icon-label">iris.mp3</div>
+    </div>
+
+    <div class="icon" data-win="recycle" tabindex="0" role="button" aria-label="Open Recycle Bin">
+      <svg viewBox="0 0 32 32"><path d="M9 10h14l-1.4 16H10.4z" fill="#d1d5db" stroke="#374151" stroke-width="1.5"/><path d="M6 10h20M12 10V7h8v3" fill="none" stroke="#374151" stroke-width="1.5"/></svg>
+      <div class="icon-label">Recycle Bin</div>
+    </div>
+  </div>
+</div>
+
+<!-- ======= WINDOWS ======= -->
+
+<div class="xp-window" id="win-info" style="left:60px; top:60px; width:380px; height:300px;">
+  <div class="title-bar">
+    <svg viewBox="0 0 32 32"><rect x="6" y="3" width="20" height="26" rx="1" fill="#fff" stroke="#6b7280" stroke-width="1.5"/><line x1="10" y1="9" x2="22" y2="9" stroke="#2f6fd6" stroke-width="1.5"/></svg>
+    <span class="title-bar-text">Save_The_Date.txt - Notepad</span>
+    <div class="title-bar-controls">
+      <button data-act="min" aria-label="Minimize">_</button>
+      <button data-act="max" aria-label="Maximize">&#9633;</button>
+      <button class="btn-close" data-act="close" aria-label="Close">&#10005;</button>
+    </div>
+  </div>
+  <div class="menu-fake"><span>File</span><span>Edit</span><span>Format</span><span>View</span><span>Help</span></div>
+  <div class="window-body" style="font-family:'Courier New', monospace; white-space:pre-wrap;">MATTHEW WILSON &amp; KATRINA ZAGAMI
+================================
+are getting married!
+
+Friday, February 12, 2027
+Le Chateau - South Salem, New York
+
+We can't wait to celebrate with you.
+</div>
+</div>
+
+<div class="xp-window" id="win-venues" style="left:440px; top:90px; width:420px; height:400px;">
+  <div class="title-bar">
+    <svg viewBox="0 0 32 32"><path d="M8 3h11l5 5v21H8z" fill="#fef3c7" stroke="#b45309" stroke-width="1.5"/></svg>
+    <span class="title-bar-text">Ceremony_and_Reception.exe</span>
+    <div class="title-bar-controls">
+      <button data-act="min" aria-label="Minimize">_</button>
+      <button data-act="max" aria-label="Maximize">&#9633;</button>
+      <button class="btn-close" data-act="close" aria-label="Close">&#10005;</button>
+    </div>
+  </div>
+  <div class="window-body">
+    <h2 class="doc-title">Ceremony</h2>
+    <div class="field">
+      <strong>St. Luke's Episcopal Church</strong>
+      331 Route 100 (Somerstown Turnpike)<br>Somers, NY 10589
+      <br><a class="btn-link" href="https://www.google.com/maps/search/?api=1&query=St+Luke%27s+Episcopal+Church+331+Route+100+Somers+NY+10589" target="_blank" rel="noopener">Get Directions</a>
+    </div>
+
+    <h2 class="doc-title">Reception</h2>
+    <div class="field">
+      <strong>Le Chateau</strong>
+      1410 Old Post Road (Route 35)<br>South Salem, NY 10590<br>
+      (914) 763-1410 &middot; <a href="https://www.lechateaubanquets.com" target="_blank" rel="noopener">lechateaubanquets.com</a>
+      <br><a class="btn-link" href="https://www.google.com/maps/search/?api=1&query=Le+Chateau+1410+Old+Post+Road+South+Salem+NY+10590" target="_blank" rel="noopener">Get Directions</a>
+    </div>
+
+    <h2 class="doc-title">Attire</h2>
+    <div class="field">
+      <strong>Black Tie Optional</strong>
+      In the spirit of midnight romance - think velvet, deep jewel tones, and a touch of drama. February runs cool, so plan a wrap or coat for outdoor photos.
+    </div>
+  </div>
+</div>
+
+<div class="xp-window" id="win-schedule" style="left:120px; top:420px; width:380px; height:300px;">
+  <div class="title-bar">
+    <svg viewBox="0 0 32 32"><rect x="4" y="5" width="24" height="22" fill="#e9f7ef" stroke="#1e7a42" stroke-width="1.5"/></svg>
+    <span class="title-bar-text">Schedule.xls - Microsoft Excel</span>
+    <div class="title-bar-controls">
+      <button data-act="min" aria-label="Minimize">_</button>
+      <button data-act="max" aria-label="Maximize">&#9633;</button>
+      <button class="btn-close" data-act="close" aria-label="Close">&#10005;</button>
+    </div>
+  </div>
+  <div class="window-body">
+    <table class="sheet">
+      <tr><th>Step</th><th>Event</th></tr>
+      <tr><td>1</td><td>Ceremony - St. Luke's Episcopal Church</td></tr>
+      <tr><td>2</td><td>Hotel check-in - 4:00 PM</td></tr>
+      <tr><td>3</td><td>Shuttles to Le Chateau</td></tr>
+      <tr><td>4</td><td>Cocktail hour - Le Chateau</td></tr>
+      <tr><td>5</td><td>Reception &amp; dinner - until 11:00 PM</td></tr>
+    </table>
+  </div>
+</div>
+
+<div class="xp-window" id="win-travel" style="left:520px; top:470px; width:380px; height:330px;">
+  <div class="title-bar">
+    <svg viewBox="0 0 32 32"><path d="M8 3h11l5 5v21H8z" fill="#dbeafe" stroke="#1d4ed8" stroke-width="1.5"/></svg>
+    <span class="title-bar-text">Travel_and_Hotel.exe</span>
+    <div class="title-bar-controls">
+      <button data-act="min" aria-label="Minimize">_</button>
+      <button data-act="max" aria-label="Maximize">&#9633;</button>
+      <button class="btn-close" data-act="close" aria-label="Close">&#10005;</button>
+    </div>
+  </div>
+  <div class="window-body">
+    <h2 class="doc-title">Hotel Zero Degrees</h2>
+    <div class="field">
+      203-730-9200 &middot; <a href="https://www.hotelzerodegrees.com" target="_blank" rel="noopener">hotelzerodegrees.com</a><br>
+      Arrive Thursday, Feb 11 &middot; Depart Saturday, Feb 13<br>
+      Promo code: <strong>WilsonZagami</strong>
+      <br><a class="btn-link" href="https://www.bookonthenet.net/east/premium/eresmain.aspx?id=oPfgYtGlzPGCtjdhJSGRxpWSv6DEA17GUTSvb%2fqoNNA%3d&arrival_date=2027-02-11&stay_nights=2&promo_code=WilsonZagami" target="_blank" rel="noopener">Reserve Your Room</a>
+    </div>
+    <p style="font-size:11.5px; color:#555;">A block of rooms is held for out-of-town guests - book early, rooms are limited.</p>
+  </div>
+</div>
+
+<div class="xp-window" id="win-rsvp" style="left:220px; top:130px; width:520px; height:440px;">
+  <div class="title-bar">
+    <svg viewBox="0 0 32 32"><circle cx="16" cy="16" r="12" fill="#bfe3ff" stroke="#1d4ed8" stroke-width="1.5"/></svg>
+    <span class="title-bar-text">RSVP - Internet Explorer</span>
+    <div class="title-bar-controls">
+      <button data-act="min" aria-label="Minimize">_</button>
+      <button data-act="max" aria-label="Maximize">&#9633;</button>
+      <button class="btn-close" data-act="close" aria-label="Close">&#10005;</button>
+    </div>
+  </div>
+  <div class="ie-toolbar">
+    <button type="button"><svg viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg>Back</button>
+    <button type="button"><svg viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg>Fwd</button>
+    <button type="button"><svg viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2"><path d="M4 12a8 8 0 1 1 3 6.2M4 12V6m0 6h6"/></svg>Reload</button>
+    <button type="button"><svg viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2"><path d="M4 11l8-7 8 7M6 10v9h12v-9"/></svg>Home</button>
+  </div>
+  <div class="address-row">
+    <label for="addr">Address</label>
+    <!-- Replace this placeholder with your real Zola RSVP URL once you have it -->
+    <input id="addr" type="text" value="https://www.zola.com/wedding/mattandkatrina/rsvp" readonly>
+  </div>
+  <div class="window-body" style="padding:0;">
+    <div class="ie-page">
+      <h2>You're Invited!</h2>
+      <p>Please let us know if you'll be joining us - kindly reply by the date on your invitation.</p>
+      <!-- Swap this href for your real Zola RSVP link -->
+      <a class="rsvp-go" href="https://www.zola.com/wedding/mattandkatrina/rsvp" target="_blank" rel="noopener">RSVP Now &raquo;</a>
+    </div>
+  </div>
+  <div class="status-bar">Done &middot; Internet zone</div>
+</div>
+
+<div class="xp-window" id="win-chat" style="left:300px; top:380px; width:340px; height:400px;">
+  <div class="title-bar">
+    <svg viewBox="0 0 32 32"><path d="M4 8a3 3 0 013-3h14a3 3 0 013 3v8a3 3 0 01-3 3H10l-5 4v-4H7a3 3 0 01-3-3z" fill="#fff59d" stroke="#b58b00" stroke-width="1.5"/></svg>
+    <span class="title-bar-text">xMattAndKat27x - Instant Message</span>
+    <div class="title-bar-controls">
+      <button data-act="min" aria-label="Minimize">_</button>
+      <button data-act="max" aria-label="Maximize">&#9633;</button>
+      <button class="btn-close" data-act="close" aria-label="Close">&#10005;</button>
+    </div>
+  </div>
+  <div class="window-body" style="display:flex; flex-direction:column; padding:10px 10px 0; overflow:visible;">
+    <div class="buddy-row"><span class="online-dot"></span><strong>xMattAndKat27x</strong><span style="color:#777; font-size:11px; margin-left:6px;">(Online)</span></div>
+    <div class="away-box">Away Message: brb planning a wedding!! check the desktop icons for all the details :) ttys&lt;3</div>
+    <div class="chat-log" id="chatLog">
+      <div class="chat-msg them">heyyy thanks for stopping by our site!! lol</div>
+    </div>
+  </div>
+  <div class="chat-input-row">
+    <input id="chatInput" type="text" placeholder="Type a message..." maxlength="80">
+    <button id="chatSend" type="button">Send</button>
+  </div>
+</div>
+
+<div class="xp-window" id="win-mp3" style="left:360px; top:160px; width:360px; height:340px;">
+  <div class="title-bar">
+    <svg viewBox="0 0 32 32"><path d="M12 24a3 3 0 100-6 3 3 0 000 6zM22 20a3 3 0 100-6 3 3 0 000 6z" fill="#333"/><path d="M12 21V7l10-2v12" fill="none" stroke="#333" stroke-width="2"/></svg>
+    <span class="title-bar-text">iris.mp3 - Napster</span>
+    <div class="title-bar-controls">
+      <button data-act="min" aria-label="Minimize">_</button>
+      <button data-act="max" aria-label="Maximize">&#9633;</button>
+      <button class="btn-close" data-act="close" aria-label="Close">&#10005;</button>
+    </div>
+  </div>
+  <div class="window-body" style="padding:12px;">
+    <div class="napster-status">Connected to Napster &middot; 2,847,193 users online</div>
+    <div class="transfer-row">Transferring: <strong>iris.mp3</strong><br>From: xMattAndKat27x</div>
+    <div class="progress-outer"><div class="progress-inner" id="dlProgress"></div></div>
+    <div class="transfer-stats" id="dlStats">0.0 kbps</div>
+    <button class="btn-link" id="dlBtn" type="button" style="margin-top:10px;">Download</button>
+
+    <div class="now-playing" id="nowPlaying" style="display:none; margin-top:14px;">
+      <div style="font-size:12px; color:#333; margin-bottom:6px;">Now Playing: <strong>Iris - Goo Goo Dolls</strong></div>
+      <iframe width="100%" height="180" src="https://www.youtube.com/embed/_HZM0QiuUS8" title="Now playing" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+    </div>
+  </div>
+</div>
+
+<div class="xp-window" id="win-recycle" style="left:700px; top:300px; width:260px; height:160px;">
+  <div class="title-bar">
+    <svg viewBox="0 0 32 32"><path d="M9 10h14l-1.4 16H10.4z" fill="#d1d5db" stroke="#374151" stroke-width="1.5"/></svg>
+    <span class="title-bar-text">Recycle Bin</span>
+    <div class="title-bar-controls">
+      <button data-act="min" aria-label="Minimize">_</button>
+      <button data-act="max" aria-label="Maximize">&#9633;</button>
+      <button class="btn-close" data-act="close" aria-label="Close">&#10005;</button>
+    </div>
+  </div>
+  <div class="window-body">This folder is empty.</div>
+</div>
+
+<!-- ======= START MENU ======= -->
+<div class="start-menu" id="startMenu">
+  <div class="start-menu-header">Matthew &amp; Katrina</div>
+  <div class="start-menu-item" data-win="info"><svg viewBox="0 0 32 32"><rect x="6" y="3" width="20" height="26" rx="1" fill="#fff" stroke="#6b7280" stroke-width="1.5"/></svg>Save_The_Date.txt</div>
+  <div class="start-menu-item" data-win="venues"><svg viewBox="0 0 32 32"><path d="M8 3h11l5 5v21H8z" fill="#fef3c7" stroke="#b45309" stroke-width="1.5"/></svg>Ceremony &amp; Reception</div>
+  <div class="start-menu-item" data-win="schedule"><svg viewBox="0 0 32 32"><rect x="4" y="5" width="24" height="22" fill="#e9f7ef" stroke="#1e7a42" stroke-width="1.5"/></svg>Schedule</div>
+  <div class="start-menu-item" data-win="travel"><svg viewBox="0 0 32 32"><path d="M8 3h11l5 5v21H8z" fill="#dbeafe" stroke="#1d4ed8" stroke-width="1.5"/></svg>Travel &amp; Hotel</div>
+  <div class="start-menu-item" data-win="rsvp"><svg viewBox="0 0 32 32"><circle cx="16" cy="16" r="12" fill="#bfe3ff" stroke="#1d4ed8" stroke-width="1.5"/></svg>RSVP</div>
+  <div class="start-menu-item" data-win="chat"><svg viewBox="0 0 32 32"><path d="M4 8a3 3 0 013-3h14a3 3 0 013 3v8a3 3 0 01-3 3H10l-5 4v-4H7a3 3 0 01-3-3z" fill="#fff59d" stroke="#b58b00" stroke-width="1.5"/></svg>Instant Message</div>
+  <div class="start-menu-item" data-win="mp3"><svg viewBox="0 0 32 32"><path d="M12 24a3 3 0 100-6 3 3 0 000 6zM22 20a3 3 0 100-6 3 3 0 000 6z" fill="#333"/><path d="M12 21V7l10-2v12" fill="none" stroke="#333" stroke-width="2"/></svg>iris.mp3</div>
+</div>
+
+<!-- ======= TASKBAR ======= -->
+<div class="taskbar">
+  <button class="start-btn" id="startBtn">start</button>
+  <div class="taskbar-buttons" id="taskbarButtons"></div>
+  <div class="systray">
+    <span id="countdown"></span>
+    <span id="clock"></span>
+  </div>
+</div>
+
+<script>
+(function(){
+  var WIN_IDS = ['info','venues','schedule','travel','rsvp','chat','mp3','recycle'];
+  var TITLES = {
+    info:'Save_The_Date.txt - Notepad',
+    venues:'Ceremony_and_Reception.exe',
+    schedule:'Schedule.xls',
+    travel:'Travel_and_Hotel.exe',
+    rsvp:'RSVP - Internet Explorer',
+    chat:'xMattAndKat27x - Instant Message',
+    mp3:'iris.mp3 - Napster',
+    recycle:'Recycle Bin'
+  };
+
+  var state = {};
+  WIN_IDS.forEach(function(id){
+    state[id] = { open:false, minimized:false, maximized:false, prevRect:null };
+  });
+  var zCounter = 10;
+  var taskbarButtons = document.getElementById('taskbarButtons');
+  var startMenu = document.getElementById('startMenu');
+  var startBtn = document.getElementById('startBtn');
+
+  function isMobile(){ return window.matchMedia('(max-width:760px)').matches; }
+
+  function winEl(id){ return document.getElementById('win-' + id); }
+
+  function focusWindow(id){
+    zCounter += 1;
+    winEl(id).style.zIndex = zCounter;
+    updateTaskbarActive(id);
+  }
+
+  function openWindow(id){
+    var el = winEl(id);
+    state[id].open = true;
+    state[id].minimized = false;
+    el.classList.add('open');
+    el.style.display = 'flex';
+    focusWindow(id);
+    renderTaskbar();
+    closeStartMenu();
+  }
+
+  function closeWindow(id){
+    var el = winEl(id);
+    state[id].open = false;
+    state[id].minimized = false;
+    el.classList.remove('open');
+    el.style.display = 'none';
+    renderTaskbar();
+  }
+
+  function minimizeWindow(id){
+    var el = winEl(id);
+    state[id].minimized = true;
+    el.style.display = 'none';
+    renderTaskbar();
+  }
+
+  function restoreWindow(id){
+    var el = winEl(id);
+    state[id].minimized = false;
+    el.style.display = 'flex';
+    focusWindow(id);
+  }
+
+  function toggleMaximize(id){
+    var el = winEl(id);
+    if (!state[id].maximized){
+      state[id].prevRect = {
+        left: el.style.left, top: el.style.top,
+        width: el.style.width, height: el.style.height
+      };
+      el.classList.add('maximized');
+      state[id].maximized = true;
+    } else {
+      el.classList.remove('maximized');
+      var r = state[id].prevRect;
+      if (r){
+        el.style.left = r.left; el.style.top = r.top;
+        el.style.width = r.width; el.style.height = r.height;
+      }
+      state[id].maximized = false;
+    }
+    focusWindow(id);
+  }
+
+  function renderTaskbar(){
+    taskbarButtons.innerHTML = '';
+    WIN_IDS.forEach(function(id){
+      if (!state[id].open) return;
+      var btn = document.createElement('button');
+      btn.className = 'taskbar-btn';
+      btn.textContent = TITLES[id];
+      btn.addEventListener('click', function(){
+        if (state[id].minimized){
+          restoreWindow(id);
+        } else {
+          focusWindow(id);
+        }
+      });
+      taskbarButtons.appendChild(btn);
+    });
+  }
+
+  function updateTaskbarActive(activeId){
+    Array.prototype.forEach.call(taskbarButtons.children, function(btn){
+      btn.classList.toggle('active', btn.textContent === TITLES[activeId]);
+    });
+  }
+
+  // ---- window controls (min/max/close) ----
+  WIN_IDS.forEach(function(id){
+    var el = winEl(id);
+    el.querySelectorAll('.title-bar-controls button').forEach(function(btn){
+      btn.addEventListener('click', function(e){
+        e.stopPropagation();
+        var act = btn.getAttribute('data-act');
+        if (act === 'close') closeWindow(id);
+        else if (act === 'min') minimizeWindow(id);
+        else if (act === 'max') toggleMaximize(id);
+      });
+    });
+    el.addEventListener('mousedown', function(){ focusWindow(id); });
+
+    // dragging
+    var bar = el.querySelector('.title-bar');
+    var dragging = false, offX = 0, offY = 0;
+    bar.addEventListener('mousedown', function(e){
+      if (isMobile() || state[id].maximized) return;
+      dragging = true;
+      var rect = el.getBoundingClientRect();
+      offX = e.clientX - rect.left;
+      offY = e.clientY - rect.top;
+      focusWindow(id);
+      e.preventDefault();
+    });
+    document.addEventListener('mousemove', function(e){
+      if (!dragging) return;
+      el.style.left = Math.max(0, e.clientX - offX) + 'px';
+      el.style.top = Math.max(0, e.clientY - offY) + 'px';
+    });
+    document.addEventListener('mouseup', function(){ dragging = false; });
+  });
+
+  // ---- desktop icons ----
+  document.querySelectorAll('.icon').forEach(function(iconEl){
+    var id = iconEl.getAttribute('data-win');
+    function activate(){
+      document.querySelectorAll('.icon').forEach(function(i){ i.classList.remove('selected'); });
+      iconEl.classList.add('selected');
+      openWindow(id);
+    }
+    iconEl.addEventListener('click', activate);
+    iconEl.addEventListener('keydown', function(e){
+      if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); activate(); }
+    });
+  });
+
+  // ---- start menu ----
+  function closeStartMenu(){ startMenu.classList.remove('open'); }
+  startBtn.addEventListener('click', function(e){
+    e.stopPropagation();
+    startMenu.classList.toggle('open');
+  });
+  startMenu.querySelectorAll('.start-menu-item').forEach(function(item){
+    item.addEventListener('click', function(){
+      openWindow(item.getAttribute('data-win'));
+    });
+  });
+  document.addEventListener('click', function(e){
+    if (!startMenu.contains(e.target) && e.target !== startBtn){
+      closeStartMenu();
+    }
+  });
+
+  // ---- clock + countdown ----
+  var clockEl = document.getElementById('clock');
+  var countdownEl = document.getElementById('countdown');
+  var target = new Date('2027-02-12T00:00:00');
+  function tick(){
+    var now = new Date();
+    var h = now.getHours() % 12 || 12;
+    var m = String(now.getMinutes()).padStart(2,'0');
+    var ampm = now.getHours() >= 12 ? 'PM' : 'AM';
+    clockEl.textContent = h + ':' + m + ' ' + ampm;
+
+    var diff = target - now;
+    if (diff > 0){
+      var d = Math.floor(diff / 86400000);
+      countdownEl.textContent = d + ' days to go';
+    } else {
+      countdownEl.textContent = 'Married!';
+    }
+  }
+  tick();
+  setInterval(tick, 1000);
+
+  // ---- instant message popup ----
+  var chatLog = document.getElementById('chatLog');
+  var chatInput = document.getElementById('chatInput');
+  var chatSend = document.getElementById('chatSend');
+  var AWAY_REPLIES = [
+    "brb planning a wedding! check Travel_and_Hotel.exe for hotel info :)",
+    "can't talk now, picking out appetizers for Le Chateau... RSVP on the globe icon! <3",
+    "literally cannot stop thinking about 2.12.2027. ttyl!",
+    "away from keyboard - probably looking at florists again lol"
+  ];
+  function addChatMsg(text, who){
+    var div = document.createElement('div');
+    div.className = 'chat-msg ' + who;
+    div.textContent = text;
+    chatLog.appendChild(div);
+    chatLog.scrollTop = chatLog.scrollHeight;
+  }
+  function sendChat(){
+    var val = chatInput.value.trim();
+    if (!val) return;
+    addChatMsg(val, 'me');
+    chatInput.value = '';
+    setTimeout(function(){
+      var reply = AWAY_REPLIES[Math.floor(Math.random() * AWAY_REPLIES.length)];
+      addChatMsg(reply, 'them');
+    }, 500);
+  }
+  chatSend.addEventListener('click', sendChat);
+  chatInput.addEventListener('keydown', function(e){
+    if (e.key === 'Enter'){ e.preventDefault(); sendChat(); }
+  });
+
+  // ---- Napster-style download sim ----
+  var dlBtn = document.getElementById('dlBtn');
+  var dlProgress = document.getElementById('dlProgress');
+  var dlStats = document.getElementById('dlStats');
+  var nowPlaying = document.getElementById('nowPlaying');
+  var downloading = false;
+  dlBtn.addEventListener('click', function(){
+    if (downloading) return;
+    downloading = true;
+    dlBtn.disabled = true;
+    dlBtn.textContent = 'Connecting...';
+    var pct = 0;
+    var statsTimer = setInterval(function(){
+      var speed = (28 + Math.random() * 40).toFixed(1);
+      var eta = Math.max(0, Math.ceil((100 - pct) / 9));
+      dlStats.textContent = speed + ' kbps  -  ' + eta + 's remaining';
+    }, 280);
+    var progTimer = setInterval(function(){
+      pct += Math.random() * 9 + 4;
+      if (pct >= 100){
+        pct = 100;
+        clearInterval(progTimer);
+        clearInterval(statsTimer);
+        dlProgress.style.width = '100%';
+        dlStats.textContent = 'Done.';
+        dlBtn.textContent = 'Download Complete';
+        nowPlaying.style.display = 'block';
+        return;
+      }
+      dlProgress.style.width = pct + '%';
+    }, 320);
+  });
+
+  // open the Save the Date note by default, like a fresh desktop greeting
+  openWindow('info');
+
+  // pop the IM window in a couple seconds later, like an incoming message
+  setTimeout(function(){
+    openWindow('chat');
+    var el = winEl('chat');
+    el.classList.add('pop-in');
+    setTimeout(function(){ el.classList.remove('pop-in'); }, 400);
+  }, 2200);
+})();
+</script>
+
+</body>
+</html>
